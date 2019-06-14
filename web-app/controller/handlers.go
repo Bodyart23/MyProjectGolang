@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"somePriject/web-app/repository"
 	"strconv"
-	"time"
 )
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
@@ -15,12 +14,10 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 }
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user = repository.Debtor{}
-	user.Id = r.FormValue("id")
 	user.FirstName = r.FormValue("firstname")
 	user.LastName = r.FormValue("lastname")
 	user.Email = r.FormValue("email")
 	user.Gender = r.FormValue("gender")
-	user.DateRegistration, _ = time.Parse("1/2/2006", r.FormValue("dateregistration"))
 	user.Loan, _ = strconv.ParseFloat(r.FormValue("loan"), 64)
 	user.Insert()
 	response := "User was created"
@@ -34,7 +31,6 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	user.LastName = r.FormValue("lastname")
 	user.Email = r.FormValue("email")
 	user.Gender = r.FormValue("gender")
-	user.DateRegistration, _ = time.Parse("1/2/2006", r.FormValue("dateregistration"))
 	user.Loan, _ = strconv.ParseFloat(r.FormValue("loan"), 64)
 	user.Update()
 	response := "User was updated"
