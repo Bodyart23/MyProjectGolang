@@ -3,12 +3,14 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"log"
 	"net/http"
 	"somePriject/web-app/controller"
+	"somePriject/web-app/log"
 )
 
 func main() {
+	log.InitLogger()
+	log.Info.Println("Server start")
 	router := mux.NewRouter()
 	router.HandleFunc("/users", controller.GetUsers).Methods("GET")
 	router.HandleFunc("/users/filter/", controller.UsersFilter).Methods("GET")
@@ -18,6 +20,6 @@ func main() {
 
 	fmt.Printf("Starting server for testing HTTP POST...\n")
 	if err := http.ListenAndServe(":8080", router); err != nil {
-		log.Fatal(err)
+		log.Error.Println(err)
 	}
 }

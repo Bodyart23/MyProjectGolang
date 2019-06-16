@@ -3,10 +3,9 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"log"
-	"time"
-
 	_ "github.com/lib/pq"
+	"somePriject/web-app/log"
+	"time"
 )
 
 type Debtor struct {
@@ -26,28 +25,26 @@ type Crud interface {
 	Delete(id int)
 }
 
-var people []Debtor
+//var people []Debtor
 
 func connection() *sql.DB {
+	log.Info.Println("call connection function")
 	connect, err := sql.Open("postgres", "postgres://postgres:bodyart79317@localhost/?sslmode=disable")
-
 	if err != nil {
-		log.Fatal(err)
+		log.Error.Println(err)
 	}
-
-	err = connect.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.Debug.Println("return from connection function", connect)
 	return connect
 }
 
 func (p Debtor) GetAll() []Debtor {
+	var people []Debtor
+	log.Info.Println("call GetAll method")
 	db := connection()
 	defer db.Close()
 	rows, err := db.Query("select * from debtors")
 	if err != nil {
-		fmt.Println(err)
+		log.Error.Println(err)
 	}
 	defer rows.Close()
 
@@ -55,47 +52,55 @@ func (p Debtor) GetAll() []Debtor {
 		d := Debtor{}
 		err := rows.Scan(&d.Id, &d.FirstName, &d.LastName, &d.Email, &d.Gender, &d.DateRegistration, &d.Loan)
 		if err != nil {
-			fmt.Println(err)
+			log.Error.Println(err)
 			continue
 		}
 		people = append(people, d)
 	}
+	log.Debug.Println("return from GetAll method", people)
 	return people
 }
 
 func (p Debtor) Insert() {
+	log.Info.Println("call Insert method")
 	db := connection()
 	defer db.Close()
 	result, err := db.Exec("insert into debtors (first_name,last_name,email,gender,date_registration,loan) values ($1,$2,$3,$4,$5,$6)",
 		p.FirstName, p.LastName, p.Email, p.Gender, time.Now(), p.Loan)
 	if err != nil {
-		fmt.Println(err)
+		log.Error.Println(err)
 	}
 	fmt.Println(result.RowsAffected())
+	log.Debug.Println("insert successful")
 }
 
 func (p Debtor) Update() {
+	log.Info.Println("call Update method")
 	db := connection()
 	defer db.Close()
 	result, err := db.Exec("update debtors set first_name = $1, last_name = $2, email = $3, gender = $4, loan =$5 where id = $6",
 		p.FirstName, p.LastName, p.Email, p.Gender, p.Loan, p.Id)
 	if err != nil {
-		fmt.Println(err)
+		log.Error.Println(err)
 	}
-	fmt.Println(result.RowsAffected()) // количество обновленных строк
+	fmt.Println(result.RowsAffected())
+	log.Debug.Println("update successful")
 }
 
 func (p Debtor) Delete(id int) {
+	log.Info.Println("call Delete method")
 	db := connection()
 	defer db.Close()
 	result, err := db.Exec("delete from debtors where id = $1", id)
 	if err != nil {
-		fmt.Println(err)
+		log.Error.Println(err)
 	}
 	fmt.Println(result.RowsAffected())
+	log.Debug.Println("delete successful")
 }
 
 func Filters(name, gender, firstDate, secondDate string) []Debtor {
+	log.Info.Println("call Filters function")
 	var user = Debtor{}
 	var users []Debtor
 	users = user.GetAll()
@@ -120,20 +125,25 @@ func Filters(name, gender, firstDate, secondDate string) []Debtor {
 		fallthrough
 	case firstDate != "":
 		var peopleFromFilter []Debtor
-		startDate, _ := time.Parse("1/2/2006", firstDate)
+		startDate, err := time.Parse("1/2/2006", firstDate)
+		if err != nil {
+			log.Error.Println(err)
+		}
 		for _, value := range users {
 			if startDate.Unix() == 0 {
 				continue
 			} else if startDate.Unix() <= value.DateRegistration.Unix() {
 				peopleFromFilter = append(peopleFromFilter, value)
 				users = peopleFromFilter
-				//users = nil
 			}
 		}
 		fallthrough
 	case secondDate != "":
 		var peopleFromFilter []Debtor
-		endDate, _ := time.Parse("1/2/2006", secondDate)
+		endDate, err := time.Parse("1/2/2006", secondDate)
+		if err != nil {
+			log.Error.Println(err)
+		}
 		for _, value := range users {
 			if endDate.Unix() == 0 {
 				continue
@@ -143,6 +153,6 @@ func Filters(name, gender, firstDate, secondDate string) []Debtor {
 			}
 		}
 	}
-
+	log.Debug.Println("return from Filters function:", users)
 	return users
 }
