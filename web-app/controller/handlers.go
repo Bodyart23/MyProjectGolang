@@ -17,8 +17,8 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	log.Info.Println("call CreateUser function")
 	var user = repository.Debtor{}
-	user.FirstName = r.FormValue("firstname")
-	user.LastName = r.FormValue("lastname")
+	user.FirstName = r.FormValue("name")
+	user.LastName = r.FormValue("surname")
 	user.Email = r.FormValue("email")
 	user.Gender = r.FormValue("gender")
 	loan, err := strconv.ParseFloat(r.FormValue("loan"), 64)
@@ -35,8 +35,8 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	log.Info.Println("call UpdateUser function")
 	var user = repository.Debtor{}
 	user.Id = r.FormValue("id")
-	user.FirstName = r.FormValue("firstname")
-	user.LastName = r.FormValue("lastname")
+	user.FirstName = r.FormValue("name")
+	user.LastName = r.FormValue("surname")
 	user.Email = r.FormValue("email")
 	user.Gender = r.FormValue("gender")
 	loan, err := strconv.ParseFloat(r.FormValue("loan"), 64)
@@ -66,7 +66,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 func UsersFilter(w http.ResponseWriter, r *http.Request) {
 	log.Info.Println("call UserFilter function")
-	name := r.FormValue("firstname")
+	name := r.FormValue("name")
 	gender := r.FormValue("gender")
 	firstDate := r.FormValue("firstDate")
 	secondDate := r.FormValue("secondDate")

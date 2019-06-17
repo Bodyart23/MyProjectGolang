@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	_ "github.com/lib/pq"
 	"somePriject/web-app/log"
 	"time"
@@ -10,8 +9,8 @@ import (
 
 type Debtor struct {
 	Id               string    `json:"id"`
-	FirstName        string    `json:"firstname"`
-	LastName         string    `json:"lastname"`
+	FirstName        string    `json:"name"`
+	LastName         string    `json:"surname"`
 	Email            string    `json:"email"`
 	Gender           string    `json:"gender"`
 	DateRegistration time.Time `json:"dateregistration"`
@@ -20,9 +19,9 @@ type Debtor struct {
 
 type Crud interface {
 	GetAll() []Debtor
-	Insert()
-	Update()
-	Delete(id int)
+	Insert() int
+	Update() int
+	Delete(id int) int
 }
 
 //var people []Debtor
@@ -61,7 +60,7 @@ func (p Debtor) GetAll() []Debtor {
 	return people
 }
 
-func (p Debtor) Insert() {
+func (p Debtor) Insert() int {
 	log.Info.Println("call Insert method")
 	db := connection()
 	defer db.Close()
@@ -70,11 +69,12 @@ func (p Debtor) Insert() {
 	if err != nil {
 		log.Error.Println(err)
 	}
-	fmt.Println(result.RowsAffected())
+	count, _ := result.RowsAffected()
 	log.Debug.Println("insert successful")
+	return int(count)
 }
 
-func (p Debtor) Update() {
+func (p Debtor) Update() int {
 	log.Info.Println("call Update method")
 	db := connection()
 	defer db.Close()
@@ -83,11 +83,12 @@ func (p Debtor) Update() {
 	if err != nil {
 		log.Error.Println(err)
 	}
-	fmt.Println(result.RowsAffected())
+	count, _ := result.RowsAffected()
 	log.Debug.Println("update successful")
+	return int(count)
 }
 
-func (p Debtor) Delete(id int) {
+func (p Debtor) Delete(id int) int {
 	log.Info.Println("call Delete method")
 	db := connection()
 	defer db.Close()
@@ -95,8 +96,9 @@ func (p Debtor) Delete(id int) {
 	if err != nil {
 		log.Error.Println(err)
 	}
-	fmt.Println(result.RowsAffected())
+	count, _ := result.RowsAffected()
 	log.Debug.Println("delete successful")
+	return int(count)
 }
 
 func Filters(name, gender, firstDate, secondDate string) []Debtor {
